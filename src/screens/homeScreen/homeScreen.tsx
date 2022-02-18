@@ -1,10 +1,8 @@
 import * as React from 'react';
-import axios from "axios";
-import {FlatList, Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
+import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {inject, observer} from "mobx-react";
 import FastImage from "react-native-fast-image";
-import {ImageType} from "../../tools/imageType";
-import API from '../../service/restAPI/netService'
+import {ImageType} from "../../tools/ImageType";
 
 const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     const mainStore = stores.mainStore
@@ -20,7 +18,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
         console.log("Render", item)
 
         return (
-            <TouchableOpacity style={{flex: 1}} onPress={() => onPress(item)}>
+            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)}>
                 <FastImage
                     style={{
                         marginTop: 10,
@@ -48,8 +46,8 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
 
         if (!mainStore.isRefresh) return (<></>)
 
-        return(
-            <ActivityIndicator style={{marginBottom: 20}} />
+        return (
+            <ActivityIndicator style={{marginBottom: 20}}/>
         )
     }
 
@@ -58,10 +56,13 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
             {mainStore.isDataLoaded && <FlatList
                 vertical={true}
                 data={mainStore.images}
-                keyExtractor={(item, index) => `${index + item}`}
+                keyExtractor={(item, index) => {
+                    console.log(item)
+                    return `${index + item.id}`
+                }}
                 renderItem={({item, index}) => renderItem(item, index)}
                 onEndReached={() => loadMoreImages()}
-                refreshing = {mainStore.isRefresh}
+                refreshing={mainStore.isRefresh}
                 ListFooterComponent={() => footerSpinner()}
             />}
             {!mainStore.isDataLoaded && <Text style={{color: 'black', flex: 1}}>Загрузка данных</Text>}
