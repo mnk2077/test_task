@@ -1,7 +1,9 @@
 import * as React from 'react'
 import {observer} from 'mobx-react'
 import {action, computed, makeAutoObservable, makeObservable, observable} from "mobx"
-import {ImageType} from "../../tools/imageType";
+import {ImageType, ResponseImagesType} from "../../tools/imageType";
+import API, {APIKey} from '../../service/restAPI/netService'
+import NET from "../../service/restAPI/netService";
 
 
 class MainStore {
@@ -13,16 +15,54 @@ class MainStore {
             setIsDataLoaded: action,
             currentImage: observable,
             setCurrentImage: action,
+            isRefresh: observable,
+            setRefresh: action,
+            loadMoreImages: action,
+            totalPhoto: observable
         })
         this.initImageArray()
     }
 
+    totalPhoto = 0
+    currentPage = 1
+    isRefresh = false
     currentImage: ImageType = null
     isDataLoaded = false
     images: ImageType[] = []
 
-    setCurrentImage = (id: number) => {
-        //TODO найти по id нужную картинку через API и установить в currentImage
+    setRefresh = (value: boolean) => {
+        this.isRefresh = value
+    }
+
+    setCurrentImage = (id: string) => {
+        this.isDataLoaded = true
+        NET.get(``, {params: {
+                method: 'flickr.photos.getInfo',
+                photo_id: id,
+            }}).then(response => {
+            const jsonData: ResponseImagesType = JSON.parse(response.data.slice(14, response.data.length-1))
+            console.log(jsonData)
+            // this.images = jsonData.photos.photo
+            this.setIsDataLoaded(true)
+        }).catch(error => {
+            console.warn('search error', error)
+        })
+    }
+
+    loadMoreImages = () => {
+        NET.get(``, {params: {
+                method: 'flickr.photos.getRecent',
+                extras: 'url_s',
+                per_page: 10,
+                page: this.currentPage + 1,
+            }}).then(response => {
+            const jsonData: ResponseImagesType = JSON.parse(response.data.slice(14, response.data.length-1))
+            this.images.push(...jsonData.photos.photo)
+            this.setRefresh(false)
+            this.currentPage = jsonData.photos.page
+        }).catch(error => {
+            console.warn('search error', error)
+        })
     }
 
     setIsDataLoaded = (value: boolean) => {
@@ -30,28 +70,21 @@ class MainStore {
     }
 
     initImageArray = () => {
-        this.setIsDataLoaded(true)
-        //TODO добавить загрузку данных через API
-        this.images = [
-            {
-                id: 0,
-                uri: 'https://live.staticflickr.com/65535/51795245849_28c72bd84f_b.jpg',
-                title: 'firstImage',
-                description: 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов.',
-                author: 'firstAuthor',
-                authorImage: '',
-                statistic: 'somethingStat'
-            },
-            {
-                id: 1,
-                uri: 'https://live.staticflickr.com/65535/51804885228_6c1b5abaa5_b.jpg',
-                title: 'secondImage',
-                description: 'Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов.',
-                author: 'secondAuthor',
-                authorImage: '',
-                statistic: 'somethingStat'
-            }
-        ]
+        NET.get(``, {params: {
+            method: 'flickr.photos.getRecent',
+            extras: 'url_s',
+            per_page: 10,
+            page: 1,
+        }}).then(response => {
+            const jsonData: ResponseImagesType = JSON.parse(response.data.slice(14, response.data.length-1))
+            this.images = jsonData.photos.photo
+            this.setIsDataLoaded(true)
+            this.currentPage = jsonData.photos.page
+            this.totalPhoto = jsonData.photos.total
+            console.log(this.totalPhoto)
+        }).catch(error => {
+            console.warn('search error', error)
+        })
 
     }
 }

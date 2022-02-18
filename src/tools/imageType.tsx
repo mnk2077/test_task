@@ -1,9 +1,25 @@
 export type ImageType = {
-    id: number,
-    uri: string,
+    id: string,
+    owner: string,
+    secret: string,
+    server: string,
+    farm: number,
     title: string,
-    description: string
-    author: string,
-    authorImage: string
-    statistic: string
+    ispublic: number,
+    isfriend: number,
+    isfamily: number,
+    url_s: string,
+    height_s: number,
+    width_s: number
+}
+
+export type ResponseImagesType = {
+    photos: {
+        page: number,
+        pages: number,
+        perpage: number,
+        total: number,
+        photo: ImageType[]
+    },
+    stat: string
 }
