@@ -1,14 +1,22 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {Text, View, StyleSheet} from 'react-native';
+import ImageViewer from "react-native-image-zoom-viewer";
+import {inject, observer} from "mobx-react";
 
-const PhotoScreen = () => {
-    return (
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <Text style={{color: 'black'}}>Photo Screen</Text>
-        </View>
+const PhotoScreen = inject('stores')(observer(({stores, route, navigation}) => {
+    const mainStore = stores.mainStore
+    const {item} = route.params
+
+
+    return(
+        <ImageViewer
+            imageUrls={[{url: item.url_s,}]}
+            enableImageZoom={true}
+            enableSwipeDown={true}
+            onSwipeDown={() => navigation.goBack()}
+        />
     )
-}
+
+}))
 
 export default PhotoScreen;

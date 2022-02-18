@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {action, makeObservable, observable} from "mobx"
-import {DetailImageType, ImageType, ResponseImagesType} from "../../tools/ImageType";
+import { DetailImageType, ImageType, ResponseImagesType, TagType} from "../../tools/ImageType";
 import NET from '../../service/restAPI/netService'
 
 
@@ -17,14 +17,20 @@ class MainStore {
             setRefresh: action,
             loadMoreImages: action,
             totalPhoto: observable,
-            currentDetail: observable
+            currentDetail: observable,
+            searchImages: observable,
+            goSearch: action,
+            totalSearchPhoto: observable
         })
         this.initImageArray()
     }
 
+    searchImages: ImageType[] = []
     currentDetail: DetailImageType = undefined
     totalPhoto = 0
+    totalSearchPhoto = 0
     currentPage = 1
+    currentSearchPage = 1
     isRefresh = false
     currentImage: ImageType = null
     isDataLoaded = false
@@ -42,11 +48,49 @@ class MainStore {
                 photo_id: id,
             }
         }).then(response => {
-            const jsonData: DetailImageType = JSON.parse(response.data.slice(14, response.data.length - 1))
-            console.log(jsonData)
-            this.currentDetail = jsonData
-            console.log(this.currentDetail)
+            console.log(response.data)
+            this.currentDetail = response.data
             this.setIsDataLoaded(true)
+        }).catch(error => {
+            console.warn('search error', error)
+        })
+    }
+
+    goSearch = (text: string) => {
+        if (text === '') {
+            this.searchImages = []
+            return
+        }
+        NET.get(``, {
+            params: {
+                method: 'flickr.photos.getRecent',
+                extras: 'url_s',
+                per_page: 100,
+                page: 1,
+            }
+        }).then(response => {
+            this.searchImages = response.data.photos.photo.filter(item => item.title.indexOf(text) > -1)
+            this.setIsDataLoaded(true)
+            this.currentSearchPage = response.data.photos.page
+            this.totalSearchPhoto = response.data.photos.total
+            console.log(this.totalSearchPhoto)
+        }).catch(error => {
+            console.warn('search error', error)
+        })
+    }
+
+    loadMoreSearchImages = (text: string) => {
+        NET.get(``, {
+            params: {
+                method: 'flickr.photos.getRecent',
+                extras: 'url_s',
+                per_page: 100,
+                page: this.currentSearchPage + 1,
+            }
+        }).then(response => {
+            this.searchImages.push(...response.data.photos.photo.filter(item => item.title.indexOf(text) > -1))
+            this.setRefresh(false)
+            this.currentSearchPage = this.currentSearchPage + 1
         }).catch(error => {
             console.warn('search error', error)
         })
@@ -61,9 +105,8 @@ class MainStore {
                 page: this.currentPage + 1,
             }
         }).then(response => {
-            const jsonData: ResponseImagesType = JSON.parse(response.data.slice(14, response.data.length - 1))
             //TODO избавиться от повторяющихся картинок на сервере
-            this.images.push(...jsonData.photos.photo)
+            this.images.push(...response.data.photos.photo)
             this.setRefresh(false)
             this.currentPage = this.currentPage + 1
         }).catch(error => {
@@ -84,11 +127,10 @@ class MainStore {
                 page: 1,
             }
         }).then(response => {
-            const jsonData: ResponseImagesType = JSON.parse(response.data.slice(14, response.data.length - 1))
-            this.images = jsonData.photos.photo
+            this.images = response.data.photos.photo
             this.setIsDataLoaded(true)
-            this.currentPage = jsonData.photos.page
-            this.totalPhoto = jsonData.photos.total
+            this.currentPage = response.data.photos.page
+            this.totalPhoto = response.data.photos.total
             console.log(this.totalPhoto)
         }).catch(error => {
             console.warn('search error', error)

@@ -6,6 +6,7 @@ import DetailsScreen from "./screens/detailsScreen/detailsScreen";
 import PhotoScreen from "./screens/photoScreen/photoScreen"
 import MainStore from "./screens/stores/mainStore";
 import {Provider} from "mobx-react";
+import SearchScreen from "./screens/searchScreen/searchScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ const App = () => {
                     <Stack.Screen name="Home" component={HomeScreen}/>
                     <Stack.Screen name="Details" component={DetailsScreen}/>
                     <Stack.Screen name="Photo" component={PhotoScreen}/>
+                    <Stack.Screen name="Search" component={SearchScreen}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </Provider>

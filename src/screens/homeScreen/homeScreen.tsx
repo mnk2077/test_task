@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {ActivityIndicator, FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, FlatList, Text, TouchableOpacity, View, Button} from 'react-native';
 import {inject, observer} from "mobx-react";
 import FastImage from "react-native-fast-image";
 import {ImageType} from "../../tools/ImageType";
@@ -22,11 +22,16 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                 <FastImage
                     style={{
                         marginTop: 10,
-                        marginBottom: 10, backgroundColor: '#8e8e8e', height: 200, width: 200
+                        marginBottom: 3,
+                        backgroundColor: '#555555',
+                        minHeight: 250,
+                        maxHeight: 300,
+                        width: '100%'
                     }}
                     source={{uri: item.url_s}}
+                    resizeMode={FastImage.resizeMode.contain}
                 />
-                <Text style={{color: 'black'}}>{item.title}</Text>
+                <Text style={{color: 'black', marginLeft: 15, fontSize: 15, }}>{item.title}</Text>
             </TouchableOpacity>
         )
     }
@@ -53,6 +58,12 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
 
     return (
         <View style={{flex: 1}}>
+            <Button
+                title="Go to search"
+                onPress={() => {
+                    navigation.navigate('Search')
+                }}
+            />
             {mainStore.isDataLoaded && <FlatList
                 vertical={true}
                 data={mainStore.images}
@@ -65,7 +76,10 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                 refreshing={mainStore.isRefresh}
                 ListFooterComponent={() => footerSpinner()}
             />}
-            {!mainStore.isDataLoaded && <Text style={{color: 'black', flex: 1}}>Загрузка данных</Text>}
+            {!mainStore.isDataLoaded && <Text style={{color: 'black',
+                                                    flex: 1,
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center'}}>Загрузка данных</Text>}
         </View>
     )
 }))

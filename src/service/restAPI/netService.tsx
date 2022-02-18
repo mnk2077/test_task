@@ -23,4 +23,9 @@ NET.interceptors.request.use((config) => {
     return config
 }, console.log)
 
+NET.interceptors.response.use((response) => {
+    response.data = JSON.parse(response.data.slice(14, response.data.length - 1))
+    return response
+}, console.log)
+
 export default NET
