@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import FastImage from "react-native-fast-image";
 import {inject, observer} from "mobx-react";
 import DetailsComponent from "../../components/detailsComponent";
@@ -31,9 +31,9 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
     }
 
     return (
-        <View style={{flex: 1}}>
+        <ScrollView style={{flex: 1}}>
             {!(mainStore.isDataLoaded && mainStore.currentDetail) &&
-            <Text style={{color: 'black', flex: 1, justifyContent: 'center', align: 'center'}}>Загрузка данных</Text>}
+            <Text style={{color: 'black', flex: 1, justifyContent: 'center'}}>Загрузка данных</Text>}
             {(mainStore.isDataLoaded && mainStore.currentDetail) &&
             <>
                 <TouchableOpacity key={item.id}
@@ -66,7 +66,7 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
                 </View>
             </>
             }
-        </View>
+        </ScrollView>
     )
 }))
 export default DetailsScreen;

@@ -2,7 +2,11 @@ import * as React from 'react'
 import {action, makeObservable, observable} from "mobx"
 import { DetailImageType, ImageType, ResponseImagesType, TagType} from "../../tools/ImageType";
 import NET from '../../service/restAPI/netService'
+import netConnect from "../../service/connectionService";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
+const cacheImages = 'Cache Images'
+const cacheDetail = 'Cache Detail'
 
 class MainStore {
     constructor() {
@@ -20,11 +24,18 @@ class MainStore {
             currentDetail: observable,
             searchImages: observable,
             goSearch: action,
-            totalSearchPhoto: observable
+            totalSearchPhoto: observable,
+            connection: observable,
+            checkConnect: action,
+            cacheImage: observable,
+            cacheDetails: observable,
+            getCacheData: action
         })
+        this.checkConnect()
         this.initImageArray()
     }
 
+    connection = false
     searchImages: ImageType[] = []
     currentDetail: DetailImageType = undefined
     totalPhoto = 0
@@ -35,6 +46,47 @@ class MainStore {
     currentImage: ImageType = null
     isDataLoaded = false
     images: ImageType[] = []
+    cacheImage: ImageType[] = []
+    cacheDetails: DetailImageType = undefined
+
+
+    getCacheData = async (typeCache) => {
+        try{
+            const value = await AsyncStorage.getItem(typeCache)
+            if (value != null){
+                if (typeCache === cacheImages){
+                    this.cacheImage = JSON.parse(value)
+
+                }else {
+                    this.cacheDetails = JSON.parse(value)
+                }
+            }
+        }catch (error){
+            console.log(error)
+        }
+    }
+
+    setCacheData = async (data: any, typeCache) => {
+        try{
+            let value = await AsyncStorage.getItem(typeCache)
+            if(value != null){
+                await AsyncStorage.removeItem(typeCache)
+                await AsyncStorage.setItem(typeCache, JSON.stringify(data))
+            }else{
+                await AsyncStorage.setItem(typeCache, JSON.stringify(data))
+            }
+
+        }catch (error) {
+            console.log(error)
+        }
+    }
+
+    checkConnect = () => {
+        netConnect().then(connect => {
+            this.connection = connect
+            console.log(this.connection)
+        })
+    }
 
     setRefresh = (value: boolean) => {
         this.isRefresh = value
@@ -50,8 +102,11 @@ class MainStore {
         }).then(response => {
             console.log(response.data)
             this.currentDetail = response.data
+            this.setCacheData(this.currentDetail,cacheDetail)
             this.setIsDataLoaded(true)
         }).catch(error => {
+            this.getCacheData(cacheDetail)
+            this.setIsDataLoaded(true)
             console.warn('search error', error)
         })
     }
@@ -79,6 +134,7 @@ class MainStore {
         })
     }
 
+    //TODO избавиться от повторяющейся функции
     loadMoreSearchImages = (text: string) => {
         NET.get(``, {
             params: {
@@ -131,8 +187,10 @@ class MainStore {
             this.setIsDataLoaded(true)
             this.currentPage = response.data.photos.page
             this.totalPhoto = response.data.photos.total
-            console.log(this.totalPhoto)
+            this.setCacheData(this.images,cacheImages)
         }).catch(error => {
+            this.getCacheData(cacheImages)
+            this.setIsDataLoaded(true)
             console.warn('search error', error)
         })
 

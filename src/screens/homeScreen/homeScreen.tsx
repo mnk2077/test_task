@@ -1,8 +1,9 @@
 import * as React from 'react';
-import {ActivityIndicator, FlatList, Text, TouchableOpacity, View, Button} from 'react-native';
+import {ActivityIndicator, Button, FlatList, Text, TouchableOpacity, View, AsyncStorage} from 'react-native';
 import {inject, observer} from "mobx-react";
 import FastImage from "react-native-fast-image";
 import {ImageType} from "../../tools/ImageType";
+import FastImageComponent from "../../components/FastImageComponent";
 
 const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     const mainStore = stores.mainStore
@@ -16,9 +17,9 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
 
     const renderItem = (item: ImageType, index: number) => {
         console.log("Render", item)
-
         return (
-            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)}>
+            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)} testID="details">
+                {console.log(mainStore.connection)}
                 <FastImage
                     style={{
                         marginTop: 10,
@@ -28,32 +29,47 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                         maxHeight: 300,
                         width: '100%'
                     }}
-                    source={{uri: item.url_s}}
+                    source={
+                        {
+                            uri: mainStore.connection ? item.url_s : mainStore.cacheImage,
+                        }
+                    }
+                    reloadImage = {true}
                     resizeMode={FastImage.resizeMode.contain}
                 />
-                <Text style={{color: 'black', marginLeft: 15, fontSize: 15, }}>{item.title}</Text>
+                <Text style={{color: 'black', marginLeft: 15, fontSize: 15,}}>{item.title}</Text>
+
             </TouchableOpacity>
         )
     }
 
     const loadMoreImages = () => {
-        if (mainStore.images.length >= mainStore.totalPhoto) {
-            return
+        if (mainStore.connection){
+            if (mainStore.images.length >= mainStore.totalPhoto) {
+                return
+            }
+            mainStore.setRefresh(true)
+            mainStore.loadMoreImages()
+        } else {
+            mainStore.setRefresh(false)
         }
-        mainStore.setRefresh(true)
-        mainStore.loadMoreImages()
     }
 
+
     const footerSpinner = () => {
-        if (mainStore.images.length >= mainStore.totalPhoto) {
-            return (<Text style={{color: 'black', marginVertical: 20}}>Фото закончились</Text>)
-        }
+         if (mainStore.connection){
+            if (mainStore.images.length >= mainStore.totalPhoto) {
+                return (<Text style={{color: 'black', marginVertical: 20}}>Фото закончились</Text>)
+            }
 
-        if (!mainStore.isRefresh) return (<></>)
+            if (!mainStore.isRefresh) return (<></>)
 
-        return (
-            <ActivityIndicator style={{marginBottom: 20}}/>
-        )
+            return (
+                <ActivityIndicator style={{marginBottom: 20}}/>
+            )
+         } else{
+             return (<Text style={{color: 'black', marginVertical: 20}}>Нет подключения к интернету</Text>)
+         }
     }
 
     return (
@@ -63,10 +79,11 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                 onPress={() => {
                     navigation.navigate('Search')
                 }}
+                testID="searchButton"
             />
             {mainStore.isDataLoaded && <FlatList
                 vertical={true}
-                data={mainStore.images}
+                data={mainStore.connection ? mainStore.images : mainStore.cacheImage}
                 keyExtractor={(item, index) => {
                     console.log(item)
                     return `${index + item.id}`
@@ -75,11 +92,12 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                 onEndReached={() => loadMoreImages()}
                 refreshing={mainStore.isRefresh}
                 ListFooterComponent={() => footerSpinner()}
+                testID="listImage"
             />}
-            {!mainStore.isDataLoaded && <Text style={{color: 'black',
-                                                    flex: 1,
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center'}}>Загрузка данных</Text>}
+            {!mainStore.isDataLoaded && <Text style={{
+                color: 'black',
+                flex: 1
+            }}>Загрузка данных</Text>}
         </View>
     )
 }))

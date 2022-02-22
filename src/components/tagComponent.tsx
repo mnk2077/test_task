@@ -19,7 +19,7 @@ const TagComponent = inject('stores')(observer(({stores, tagTitle, key}) => {
                 paddingRight: 20,
             }
         } key={key}>
-            <Text>
+            <Text style={{color: 'white'}}>
                 {tagTitle}
             </Text>
         </View>
