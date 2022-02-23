@@ -18,7 +18,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     const renderItem = (item: ImageType, index: number) => {
         console.log("Render", item)
         return (
-            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)} testID="details">
+            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)} >
                 {console.log(mainStore.connection)}
                 <FastImage
                     style={{
@@ -73,7 +73,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     }
 
     return (
-        <View style={{flex: 1}}>
+        <View style={{flex: 1}} >
             <Button
                 title="Go to search"
                 onPress={() => {
