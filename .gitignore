@@ -2,6 +2,9 @@
 #
 .DS_Store
 
+.idea
+.bundle
+
 # Xcode
 #
 build/
