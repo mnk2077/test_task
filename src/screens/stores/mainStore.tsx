@@ -84,7 +84,6 @@ class MainStore {
     checkConnect = () => {
         netConnect().then(connect => {
             this.connection = connect
-            console.log(this.connection)
         })
     }
 
@@ -100,7 +99,6 @@ class MainStore {
                 photo_id: id,
             }
         }).then(response => {
-            console.log(response.data)
             this.currentDetail = response.data
             this.setCacheData(this.currentDetail,cacheDetail)
             this.setIsDataLoaded(true)
@@ -128,7 +126,6 @@ class MainStore {
             this.setIsDataLoaded(true)
             this.currentSearchPage = response.data.photos.page
             this.totalSearchPhoto = response.data.photos.total
-            console.log(this.totalSearchPhoto)
         }).catch(error => {
             console.warn('search error', error)
         })

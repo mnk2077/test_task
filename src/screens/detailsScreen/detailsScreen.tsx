@@ -15,12 +15,10 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
         return navigation.addListener('beforeRemove', () => {
             mainStore.currentImage = null
             mainStore.currentDetail = undefined
-            console.log(mainStore.currentImage, mainStore.currentDetail)
         })
     }, [navigation])
 
     const listTags = () => mainStore.currentDetail.photo.tags.tag.map((tag) => {
-            console.log(tag)
             return (<TagComponent key={tag.id} tagTitle={tag._content}/>)
     })
 

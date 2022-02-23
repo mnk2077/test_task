@@ -16,10 +16,8 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     }
 
     const renderItem = (item: ImageType, index: number) => {
-        console.log("Render", item)
         return (
             <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)} >
-                {console.log(mainStore.connection)}
                 <FastImage
                     style={{
                         marginTop: 10,
@@ -85,7 +83,6 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                 vertical={true}
                 data={mainStore.connection ? mainStore.images : mainStore.cacheImage}
                 keyExtractor={(item, index) => {
-                    console.log(item)
                     return `${index + item.id}`
                 }}
                 renderItem={({item, index}) => renderItem(item, index)}

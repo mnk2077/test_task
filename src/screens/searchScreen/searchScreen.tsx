@@ -25,7 +25,6 @@ const SearchScreen = inject('stores')(observer(({stores, route, navigation}) => 
     }
 
     const renderItem = (item: ImageType, index: number) => {
-        console.log("Render", item)
 
         return (
             <>
@@ -79,7 +78,7 @@ const SearchScreen = inject('stores')(observer(({stores, route, navigation}) => 
                     placeholder={'Search image'}
                     placeholderTextColor="#8e8e8e"
                     style={{
-                        marginRight: 20,
+                        marginRight: 40,
                         width: '80%',
                         color: 'black',
                     }}
@@ -96,7 +95,6 @@ const SearchScreen = inject('stores')(observer(({stores, route, navigation}) => 
                 vertical={true}
                 data={mainStore.searchImages}
                 keyExtractor={(item, index) => {
-                    console.log(item)
                     return `${index + item.id}`
                 }}
                 renderItem={({item, index}) => renderItem(item, index)}
