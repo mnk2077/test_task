@@ -19,7 +19,7 @@ const NET = axios.create({
 })
 
 NET.interceptors.request.use((config) => {
-    config.params = {api_key: APIKey, format: 'json', secret: APISecret,  ...config.params}
+    config.params = {api_key: APIKey, format: 'json', secret: APISecret, ...config.params}
     return config
 }, console.log)
 

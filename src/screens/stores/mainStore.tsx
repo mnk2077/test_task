@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {action, makeObservable, observable} from "mobx"
-import { DetailImageType, ImageType, ResponseImagesType, TagType} from "../../tools/ImageType";
+import {DetailImageType, ImageType} from "../../tools/ImageType";
 import NET from '../../service/restAPI/netService'
 import netConnect from "../../service/connectionService";
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -51,32 +51,32 @@ class MainStore {
 
 
     getCacheData = async (typeCache) => {
-        try{
+        try {
             const value = await AsyncStorage.getItem(typeCache)
-            if (value != null){
-                if (typeCache === cacheImages){
+            if (value != null) {
+                if (typeCache === cacheImages) {
                     this.cacheImage = JSON.parse(value)
 
-                }else {
+                } else {
                     this.cacheDetails = JSON.parse(value)
                 }
             }
-        }catch (error){
+        } catch (error) {
             console.log(error)
         }
     }
 
     setCacheData = async (data: any, typeCache) => {
-        try{
+        try {
             let value = await AsyncStorage.getItem(typeCache)
-            if(value != null){
+            if (value != null) {
                 await AsyncStorage.removeItem(typeCache)
                 await AsyncStorage.setItem(typeCache, JSON.stringify(data))
-            }else{
+            } else {
                 await AsyncStorage.setItem(typeCache, JSON.stringify(data))
             }
 
-        }catch (error) {
+        } catch (error) {
             console.log(error)
         }
     }
@@ -100,7 +100,7 @@ class MainStore {
             }
         }).then(response => {
             this.currentDetail = response.data
-            this.setCacheData(this.currentDetail,cacheDetail)
+            this.setCacheData(this.currentDetail, cacheDetail)
             this.setIsDataLoaded(true)
         }).catch(error => {
             this.getCacheData(cacheDetail)
@@ -184,7 +184,7 @@ class MainStore {
             this.setIsDataLoaded(true)
             this.currentPage = response.data.photos.page
             this.totalPhoto = response.data.photos.total
-            this.setCacheData(this.images,cacheImages)
+            this.setCacheData(this.images, cacheImages)
         }).catch(error => {
             this.getCacheData(cacheImages)
             this.setIsDataLoaded(true)

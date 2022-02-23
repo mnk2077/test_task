@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FastImage from "react-native-fast-image";
 import {inject, observer} from "mobx-react";
 import DetailsComponent from "../../components/detailsComponent";
@@ -19,7 +19,7 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
     }, [navigation])
 
     const listTags = () => mainStore.currentDetail.photo.tags.tag.map((tag) => {
-            return (<TagComponent key={tag.id} tagTitle={tag._content}/>)
+        return (<TagComponent key={tag.id} tagTitle={tag._content}/>)
     })
 
     const onPress = (item: ImageType) => {
@@ -39,7 +39,7 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
                                       flex: 1,
                                       minHeight: 250,
                                       maxHeight: 260,
-                                      width:'100%'
+                                      width: '100%'
                                   }}
                                   onPress={() => onPress(item)}>
                     <FastImage
@@ -57,7 +57,13 @@ const DetailsScreen = inject('stores')(observer(({stores, route, navigation}) =>
                 <AuthorComponent/>
                 <DetailsComponent/>
                 {mainStore.currentDetail.photo.tags.tag.length > 0 &&
-                    <Text style={{color: 'black', marginTop: 20, marginBottom: 10, fontSize: 20, marginHorizontal: 20}}>Tags</Text>
+                <Text style={{
+                    color: 'black',
+                    marginTop: 20,
+                    marginBottom: 10,
+                    fontSize: 20,
+                    marginHorizontal: 20
+                }}>Tags</Text>
                 }
                 <View style={styles.tagContainer}>
                     {listTags()}

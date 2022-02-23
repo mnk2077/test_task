@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-    ActivityIndicator,
-    FlatList,
-    Text,
-    TouchableOpacity,
-    View,
-    TextInput,
-    Button
-} from 'react-native';
+import {ActivityIndicator, Button, FlatList, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {inject, observer} from "mobx-react";
 import FastImage from "react-native-fast-image";
 import {ImageType} from "../../tools/ImageType";
@@ -41,7 +33,7 @@ const SearchScreen = inject('stores')(observer(({stores, route, navigation}) => 
                         source={{uri: item.url_s}}
                         resizeMode={FastImage.resizeMode.contain}
                     />
-                    <Text style={{color: 'black', marginLeft: 15, fontSize: 15, }}>{item.title}</Text>
+                    <Text style={{color: 'black', marginLeft: 15, fontSize: 15,}}>{item.title}</Text>
                 </TouchableOpacity>
             </>
         )
@@ -102,10 +94,12 @@ const SearchScreen = inject('stores')(observer(({stores, route, navigation}) => 
                 refreshing={mainStore.isRefresh}
                 ListFooterComponent={() => footerSpinner()}
             />}
-            {!mainStore.isDataLoaded && <Text style={{color: 'black',
+            {!mainStore.isDataLoaded && <Text style={{
+                color: 'black',
                 flex: 1,
                 justifyContent: 'center',
-                alignItems: 'center'}}>Загрузка данных</Text>}
+                alignItems: 'center'
+            }}>Загрузка данных</Text>}
         </View>
     )
 }))

@@ -2,7 +2,6 @@ import * as React from 'react'
 import HomeScreen from "../homeScreen";
 import {fireEvent, render} from "@testing-library/react-native"
 import MainStore from "../../stores/mainStore";
-import TouchableOpacity from 'react-native'
 import {inject, observer} from "mobx-react";
 import {Provider} from "mobx-react";
 import App from "../../../App";
@@ -13,7 +12,10 @@ describe('Home Screen', () => {
         const stores = {
             mainStore: new MainStore()
         }
-        const navigation = {navigate: () => {}}
+        const navigation = {
+            navigate: () => {
+            }
+        }
         const spy = jest.spyOn(navigation, "navigate")
 
         const screen = render(

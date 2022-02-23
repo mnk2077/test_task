@@ -1,9 +1,8 @@
 import * as React from 'react';
-import {ActivityIndicator, Button, FlatList, Text, TouchableOpacity, View, AsyncStorage} from 'react-native';
+import {ActivityIndicator, Button, FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {inject, observer} from "mobx-react";
 import FastImage from "react-native-fast-image";
 import {ImageType} from "../../tools/ImageType";
-import FastImageComponent from "../../components/FastImageComponent";
 
 const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     const mainStore = stores.mainStore
@@ -17,7 +16,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
 
     const renderItem = (item: ImageType, index: number) => {
         return (
-            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)} >
+            <TouchableOpacity key={item.id + index} style={{flex: 1}} onPress={() => onPress(item)}>
                 <FastImage
                     style={{
                         marginTop: 10,
@@ -32,7 +31,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
                             uri: mainStore.connection ? item.url_s : mainStore.cacheImage,
                         }
                     }
-                    reloadImage = {true}
+                    reloadImage={true}
                     resizeMode={FastImage.resizeMode.contain}
                 />
                 <Text style={{color: 'black', marginLeft: 15, fontSize: 15,}}>{item.title}</Text>
@@ -42,7 +41,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
     }
 
     const loadMoreImages = () => {
-        if (mainStore.connection){
+        if (mainStore.connection) {
             if (mainStore.images.length >= mainStore.totalPhoto) {
                 return
             }
@@ -55,7 +54,7 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
 
 
     const footerSpinner = () => {
-         if (mainStore.connection){
+        if (mainStore.connection) {
             if (mainStore.images.length >= mainStore.totalPhoto) {
                 return (<Text style={{color: 'black', marginVertical: 20}}>Фото закончились</Text>)
             }
@@ -65,13 +64,13 @@ const HomeScreen = inject('stores')(observer(({stores, navigation}) => {
             return (
                 <ActivityIndicator style={{marginBottom: 20}}/>
             )
-         } else{
-             return (<Text style={{color: 'black', marginVertical: 20}}>Нет подключения к интернету</Text>)
-         }
+        } else {
+            return (<Text style={{color: 'black', marginVertical: 20}}>Нет подключения к интернету</Text>)
+        }
     }
 
     return (
-        <View style={{flex: 1}} >
+        <View style={{flex: 1}}>
             <Button
                 title="Go to search"
                 onPress={() => {
